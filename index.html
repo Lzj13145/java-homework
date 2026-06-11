@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Java作业集 — Chromatic Code Garden</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ========================================
+   CHROMATIC CODE GARDEN — Design System
+   ======================================== */
+
+:root {
+  /* Card gradients */
+  --card-1-from: #ff6b6b;  --card-1-to: #ee5a24;  /* Coral Flame */
+  --card-2-from: #48dbfb;  --card-2-to: #0abde3;  /* Ocean Breeze */
+  --card-3-from: #a29bfe;  --card-3-to: #6c5ce7;  /* Violet Dream */
+  --card-4-from: #55efc4;  --card-4-to: #00b894;  /* Emerald Fresh */
+  --card-5-from: #fdcb6e;  --card-5-to: #f39c12;  /* Golden Hour */
+  --card-6-from: #fd79a8;  --card-6-to: #e84393;  /* Rose Bloom */
+
+  /* Accent colors matching cards (for code borders) */
+  --accent-1: #ee5a24;
+  --accent-2: #0abde3;
+  --accent-3: #6c5ce7;
+  --accent-4: #00b894;
+  --accent-5: #f39c12;
+  --accent-6: #e84393;
+
+  /* Neutrals */
+  --bg: #f5f0eb;
+  --surface: #ffffff;
+  --text: #2d3436;
+  --text-muted: #636e72;
+  --text-light: #b2bec3;
+
+  /* Spacing rhythm */
+  --space-xs: 8px;
+  --space-sm: 16px;
+  --space-md: 24px;
+  --space-lg: 40px;
+  --space-xl: 64px;
+
+  /* Type */
+  --font-display: 'Fredoka', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --font-body: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', 'Segoe UI', sans-serif;
+  --font-code: 'Fira Code', 'SF Mono', 'Consolas', 'Monaco', monospace;
+}
+
+/* ---- Reset ---- */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---- Texture overlay ---- */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 20% 0%, rgba(255,107,107,0.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 100%, rgba(108,92,231,0.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 50%, rgba(253,203,110,0.04) 0%, transparent 60%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ========================================
+   HERO — Wavy Gradient
+   ======================================== */
+
+.hero {
+  position: relative;
+  background: linear-gradient(135deg, #6c5ce7 0%, #a29bfe 30%, #fd79a8 70%, #fdcb6e 100%);
+  color: #fff;
+  padding: 80px 24px 100px;
+  text-align: center;
+  overflow: hidden;
+  z-index: 1;
+}
+
+/* Animated floating shapes in hero */
+.hero::before {
+  content: '';
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 50%;
+  top: -60px;
+  left: -60px;
+  animation: heroFloat1 12s ease-in-out infinite;
+}
+.hero::after {
+  content: '';
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 50%;
+  bottom: -40px;
+  right: -40px;
+  animation: heroFloat2 10s ease-in-out infinite;
+}
+
+@keyframes heroFloat1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(40px, 30px) scale(1.15); }
+}
+@keyframes heroFloat2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-30px, -20px) scale(1.1); }
+}
+
+.hero-content {
+  position: relative;
+  z-index: 1;
+}
+
+.hero-badge {
+  display: inline-block;
+  background: rgba(255,255,255,0.2);
+  backdrop-filter: blur(10px);
+  padding: 6px 20px;
+  border-radius: 50px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  margin-bottom: 24px;
+  font-family: var(--font-display);
+}
+
+.hero h1 {
+  font-family: var(--font-display);
+  font-size: clamp(2.2rem, 6vw, 3.6rem);
+  font-weight: 700;
+  margin-bottom: 12px;
+  letter-spacing: 1px;
+  text-shadow: 0 2px 12px rgba(0,0,0,0.15);
+}
+
+.hero-subtitle {
+  font-size: clamp(1rem, 2vw, 1.2rem);
+  opacity: 0.92;
+  font-weight: 400;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+/* Hero wavy bottom edge */
+.hero-wave {
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 100%;
+  overflow: hidden;
+  line-height: 0;
+}
+.hero-wave svg {
+  display: block;
+  width: 100%;
+  height: 80px;
+}
+
+/* ========================================
+   CARDS GRID
+   ======================================== */
+
+.cards-section {
+  position: relative;
+  z-index: 1;
+  max-width: 1160px;
+  margin: -20px auto 60px;
+  padding: 0 24px;
+}
+
+.cards-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+@media (max-width: 960px) {
+  .cards-container { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 600px) {
+  .cards-container { grid-template-columns: 1fr; }
+  .hero { padding: 60px 20px 80px; }
+}
+
+/* ---- Card ---- */
+
+.card-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.card {
+  border-radius: 20px;
+  padding: 36px 28px 28px;
+  cursor: pointer;
+  color: #fff;
+  box-shadow:
+    0 8px 32px rgba(0,0,0,0.10),
+    0 2px 8px rgba(0,0,0,0.06);
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
+              box-shadow 0.35s ease;
+  position: relative;
+  overflow: hidden;
+  user-select: none;
+
+  /* Entrance animation */
+  opacity: 0;
+  transform: translateY(40px);
+  animation: cardRise 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* Staggered entrance */
+.card:nth-child(1) { animation-delay: 0.05s; }
+.card:nth-child(2) { animation-delay: 0.15s; }
+.card:nth-child(3) { animation-delay: 0.25s; }
+.card:nth-child(4) { animation-delay: 0.35s; }
+.card:nth-child(5) { animation-delay: 0.45s; }
+.card:nth-child(6) { animation-delay: 0.55s; }
+
+@keyframes cardRise {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Shimmer effect on hover */
+.card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 50%);
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  pointer-events: none;
+}
+.card:hover::after { opacity: 1; }
+
+.card:hover {
+  transform: translateY(-8px);
+  box-shadow:
+    0 20px 50px rgba(0,0,0,0.16),
+    0 4px 12px rgba(0,0,0,0.08);
+}
+
+/* ---- Card color variants ---- */
+.card:nth-child(1) { background: linear-gradient(135deg, var(--card-1-from), var(--card-1-to)); }
+.card:nth-child(2) { background: linear-gradient(135deg, var(--card-2-from), var(--card-2-to)); }
+.card:nth-child(3) { background: linear-gradient(135deg, var(--card-3-from), var(--card-3-to)); }
+.card:nth-child(4) { background: linear-gradient(135deg, var(--card-4-from), var(--card-4-to)); }
+.card:nth-child(5) { background: linear-gradient(135deg, var(--card-5-from), var(--card-5-to)); }
+.card:nth-child(6) { background: linear-gradient(135deg, var(--card-6-from), var(--card-6-to)); }
+
+/* ---- Card internal ---- */
+
+.card-icon {
+  font-size: 2.4rem;
+  margin-bottom: 16px;
+  display: block;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.card:hover .card-icon { transform: scale(1.15) rotate(-5deg); }
+
+.card-number {
+  position: absolute;
+  top: 12px;
+  right: 20px;
+  font-family: var(--font-display);
+  font-size: 4rem;
+  font-weight: 700;
+  opacity: 0.15;
+  line-height: 1;
+}
+
+.card-title {
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 600;
+  margin-bottom: 4px;
+  position: relative;
+  z-index: 1;
+}
+
+.card-hint {
+  font-size: 0.88rem;
+  opacity: 0.8;
+  font-weight: 400;
+  position: relative;
+  z-index: 1;
+}
+
+.card-expand-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 14px;
+  font-size: 0.8rem;
+  opacity: 0.7;
+  transition: opacity 0.3s;
+  position: relative;
+  z-index: 1;
+}
+.card:hover .card-expand-indicator { opacity: 1; }
+.card-expand-indicator .arrow {
+  display: inline-block;
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.card.expanded .arrow { transform: rotate(180deg); }
+
+/* ---- Expandable answer area ---- */
+
+.card-answer {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.6s cubic-bezier(0.4, 0, 0.2, 1),
+              margin-top 0.5s ease;
+  background: var(--surface);
+  color: var(--text);
+  border-radius: 0 0 16px 16px;
+  margin-top: 0;
+  font-family: var(--font-body);
+}
+
+.card.expanded {
+  border-radius: 20px 20px 0 0;
+}
+
+.card.expanded .card-answer {
+  max-height: 4000px;
+  margin-top: 24px;
+  padding: 32px 28px;
+}
+
+/* ---- Answer content ---- */
+
+.card-answer h3 {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  color: var(--text);
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #f0f0f0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.question-box {
+  background: #f8f9fa;
+  padding: 18px 20px;
+  border-radius: 12px;
+  margin-bottom: 22px;
+  font-size: 0.93rem;
+  border-left: 4px solid #c0c0c0;
+  line-height: 1.7;
+}
+.question-box strong {
+  color: #555;
+}
+
+/* ---- Code block ---- */
+
+.code-block {
+  background: #1a1e2e;
+  color: #d6deeb;
+  padding: 22px 24px;
+  border-radius: 12px;
+  overflow-x: auto;
+  font-family: var(--font-code);
+  font-size: 0.82rem;
+  line-height: 1.75;
+  position: relative;
+  margin-bottom: 16px;
+}
+
+/* Color-coded left border matching card */
+.card:nth-child(1) .code-block { border-left: 4px solid var(--accent-1); }
+.card:nth-child(2) .code-block { border-left: 4px solid var(--accent-2); }
+.card:nth-child(3) .code-block { border-left: 4px solid var(--accent-3); }
+.card:nth-child(4) .code-block { border-left: 4px solid var(--accent-4); }
+.card:nth-child(5) .code-block { border-left: 4px solid var(--accent-5); }
+.card:nth-child(6) .code-block { border-left: 4px solid var(--accent-6); }
+
+/* Java keyword highlighting */
+.code-block .kw { color: #c792ea; font-weight: 500; }   /* keywords */
+.code-block .ty { color: #ffcb6b; }                      /* types */
+.code-block .str { color: #c3e88d; }                     /* strings */
+.code-block .cm { color: #676e95; font-style: italic; }  /* comments */
+.code-block .an { color: #f78c6c; }                      /* annotations */
+.code-block .num { color: #f78c6c; }                     /* numbers */
+.code-block .fn { color: #82aaff; }                      /* function names */
+
+.code-block code {
+  display: block;
+  white-space: pre;
+}
+
+/* Tip text */
+.tip {
+  margin-top: 14px;
+  padding: 12px 16px;
+  background: #fffbf0;
+  border-radius: 10px;
+  font-size: 0.88rem;
+  color: #8b7355;
+  border: 1px solid #f0e4c8;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+/* ---- Answer prose ---- */
+.answer-text {
+  font-size: 0.93rem;
+  line-height: 1.8;
+  color: #444;
+}
+.answer-text p { margin-bottom: 10px; }
+.answer-text ul {
+  padding-left: 20px;
+  margin: 8px 0;
+}
+.answer-text ul li { margin-bottom: 4px; }
+
+/* ========================================
+   FOOTER
+   ======================================== */
+
+footer {
+  text-align: center;
+  padding: 40px 24px;
+  color: var(--text-light);
+  font-size: 0.88rem;
+  position: relative;
+  z-index: 1;
+}
+footer .heart { color: #e84393; }
+
+/* ========================================
+   SCROLLBAR
+   ======================================== */
+
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: #f0f0f0; }
+::-webkit-scrollbar-thumb { background: #c0c0c0; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #a0a0a0; }
+
+</style>
+</head>
+<body>
+
+<!-- ============================================
+     HERO
+     ============================================ -->
+<header class="hero">
+  <div class="hero-content">
+    <div class="hero-badge">📚 HOMEWORK COLLECTION</div>
+    <h1>☕ Java 作业集</h1>
+    <p class="hero-subtitle">一个 Java 学习者的作业记录<br>点击卡片展开答案，探索代码世界</p>
+  </div>
+  <div class="hero-wave">
+    <svg viewBox="0 0 1440 80" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0,40 C240,80 480,0 720,40 C960,80 1200,0 1440,40 L1440,80 L0,80 Z" fill="#f5f0eb"/>
+    </svg>
+  </div>
+</header>
+
+<!-- ============================================
+     CARDS
+     ============================================ -->
+<section class="cards-section">
+  <div class="cards-container">
+
+    <!-- ===== Card 1: 形式化方法 ===== -->
+    <div class="card" onclick="toggleCard(this)">
+      <div class="card-number">一</div>
+      <span class="card-icon">📖</span>
+      <div class="card-title">形式化方法</div>
+      <div class="card-hint">阅读了解 + 推荐书籍</div>
+      <div class="card-expand-indicator">
+        点击查看答案 <span class="arrow">↓</span>
+      </div>
+      <div class="card-answer">
+        <div class="question-box">
+          <strong>问题：</strong>阅读和了解什么是形式化方法。推荐阅读书籍：大象——Thinking in UML。
+        </div>
+        <h3>📝 答案</h3>
+        <div class="answer-text">
+          <p><strong>形式化方法（Formal Methods）</strong>是一种基于数学和形式逻辑的软件开发技术，用于精确地描述、设计和验证软件系统。它使用严格的数学语言来定义系统行为，能够通过数学证明来验证系统的正确性、一致性和完整性。</p>
+          <p><strong>核心思想：</strong></p>
+          <ul>
+            <li>用<strong>数学公式</strong>精确描述系统规格，消除自然语言的歧义</li>
+            <li>通过<strong>逻辑推理</strong>验证程序是否满足规格说明</li>
+            <li>在安全关键系统（航空航天、医疗设备、金融交易）中尤为重要</li>
+          </ul>
+          <p style="margin-top:16px;"><strong>📚 推荐书籍：《大象——Thinking in UML》</strong></p>
+          <p>这本书以 UML（统一建模语言）为核心，系统地讲解了面向对象分析与设计方法。通过丰富的实际案例，帮助读者理解如何用 UML 进行系统建模，是学习软件建模的经典入门书籍。书中涵盖了用例图、类图、时序图、活动图等核心 UML 图型的绘制方法和应用场景。</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== Card 2: Prime Numbers ===== -->
+    <div class="card" onclick="toggleCard(this)">
+      <div class="card-number">二</div>
+      <span class="card-icon">🔢</span>
+      <div class="card-title">Prime Numbers</div>
+      <div class="card-hint">素数判定与筛选</div>
+      <div class="card-expand-indicator">
+        点击查看答案 <span class="arrow">↓</span>
+      </div>
+      <div class="card-answer">
+        <div class="question-box">
+          <strong>问题：</strong>编写 Java 程序实现素数（质数）的判定与生成。
+        </div>
+        <h3>📝 答案 — 埃拉托色尼筛法</h3>
+        <div class="code-block"><code><span class="kw">import</span> <span class="ty">java.util</span>.<span class="ty">ArrayList</span>;
+<span class="kw">import</span> <span class="ty">java.util</span>.<span class="ty">Arrays</span>;
+<span class="kw">import</span> <span class="ty">java.util</span>.<span class="ty">List</span>;
+
+<span class="kw">public class</span> <span class="ty">PrimeNumbers</span> {
+
+    <span class="cm">/**</span>
+<span class="cm">     * 判断一个数是否为素数（6k±1 优化）</span>
+<span class="cm">     * @param n 待判断的数</span>
+<span class="cm">     * @return true 如果 n 是素数</span>
+<span class="cm">     */</span>
+    <span class="kw">public static</span> <span class="ty">boolean</span> <span class="fn">isPrime</span>(<span class="ty">int</span> n) {
+        <span class="kw">if</span> (n &lt;= <span class="num">1</span>) <span class="kw">return false</span>;
+        <span class="kw">if</span> (n &lt;= <span class="num">3</span>) <span class="kw">return true</span>;
+        <span class="kw">if</span> (n % <span class="num">2</span> == <span class="num">0</span> || n % <span class="num">3</span> == <span class="num">0</span>) <span class="kw">return false</span>;
+
+        <span class="cm">// 6k±1 优化：所有 ≥5 的素数都可表示为 6k±1</span>
+        <span class="kw">for</span> (<span class="ty">int</span> i = <span class="num">5</span>; i * i &lt;= n; i += <span class="num">6</span>) {
+            <span class="kw">if</span> (n % i == <span class="num">0</span> || n % (i + <span class="num">2</span>) == <span class="num">0</span>)
+                <span class="kw">return false</span>;
+        }
+        <span class="kw">return true</span>;
+    }
+
+    <span class="cm">/**</span>
+<span class="cm">     * 埃拉托色尼筛法：生成 [2, n] 内所有素数</span>
+<span class="cm">     * 时间复杂度 O(n log log n)</span>
+<span class="cm">     */</span>
+    <span class="kw">public static</span> <span class="ty">List</span>&lt;<span class="ty">Integer</span>&gt; <span class="fn">sieveOfEratosthenes</span>(<span class="ty">int</span> n) {
+        <span class="ty">boolean</span>[] isPrime = <span class="kw">new </span><span class="ty">boolean</span>[n + <span class="num">1</span>];
+        <span class="ty">Arrays</span>.fill(isPrime, <span class="kw">true</span>);
+        isPrime[<span class="num">0</span>] = isPrime[<span class="num">1</span>] = <span class="kw">false</span>;
+
+        <span class="kw">for</span> (<span class="ty">int</span> i = <span class="num">2</span>; i * i &lt;= n; i++) {
+            <span class="kw">if</span> (isPrime[i]) {
+                <span class="kw">for</span> (<span class="ty">int</span> j = i * i; j &lt;= n; j += i) {
+                    isPrime[j] = <span class="kw">false</span>;
+                }
+            }
+        }
+
+        <span class="ty">List</span>&lt;<span class="ty">Integer</span>&gt; primes = <span class="kw">new </span><span class="ty">ArrayList</span>&lt;&gt;();
+        <span class="kw">for</span> (<span class="ty">int</span> i = <span class="num">2</span>; i &lt;= n; i++) {
+            <span class="kw">if</span> (isPrime[i]) primes.add(i);
+        }
+        <span class="kw">return</span> primes;
+    }
+
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="ty">String</span>[] args) {
+        <span class="ty">System</span>.out.println(<span class="str">"17 是素数? "</span> + isPrime(<span class="num">17</span>));  <span class="cm">// true</span>
+        <span class="ty">System</span>.out.println(<span class="str">"100 以内的素数: "</span>
+            + sieveOfEratosthenes(<span class="num">100</span>));
+        <span class="cm">// 输出: [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41,</span>
+<span class="cm">        //        43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97]</span>
+    }
+}</code></div>
+        <div class="tip">
+          💡 <span><strong>复杂度：</strong>单个数判定 O(√n)；筛法 O(n log log n)。6k±1 优化利用了"除 2 和 3 外，所有素数必在 6 的倍数两侧"的数学性质。</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== Card 3: 枚举应用场景 ===== -->
+    <div class="card" onclick="toggleCard(this)">
+      <div class="card-number">三</div>
+      <span class="card-icon">🎯</span>
+      <div class="card-title">枚举类型应用场景</div>
+      <div class="card-hint">3个经典使用场景</div>
+      <div class="card-expand-indicator">
+        点击查看答案 <span class="arrow">↓</span>
+      </div>
+      <div class="card-answer">
+        <div class="question-box">
+          <strong>问题：</strong>枚举类型的三个应用场景——状态/类型定义、策略模式（替换大量 if/else）、统一返回码（后端接口必备）。
+        </div>
+        <h3>📝 答案 — 三场景代码示例</h3>
+        <div class="code-block"><code><span class="cm">// ========== 场景1：状态/类型定义（最常用！）==========</span>
+<span class="kw">public enum</span> <span class="ty">OrderStatus</span> {
+    <span class="fn">PENDING</span>(<span class="str">"待处理"</span>),
+    <span class="fn">CONFIRMED</span>(<span class="str">"已确认"</span>),
+    <span class="fn">SHIPPING</span>(<span class="str">"配送中"</span>),
+    <span class="fn">DELIVERED</span>(<span class="str">"已送达"</span>),
+    <span class="fn">CANCELLED</span>(<span class="str">"已取消"</span>);
+
+    <span class="kw">private final</span> <span class="ty">String</span> description;
+    <span class="ty">OrderStatus</span>(<span class="ty">String</span> desc) { <span class="kw">this</span>.description = desc; }
+    <span class="kw">public</span> <span class="ty">String</span> <span class="fn">getDescription</span>() { <span class="kw">return</span> description; }
+}
+
+<span class="cm">// ========== 场景2：策略模式（替换大量 if/else）==========</span>
+<span class="kw">public enum</span> <span class="ty">Calculator</span> {
+    <span class="fn">ADD</span> {
+        <span class="kw">public double</span> <span class="fn">apply</span>(<span class="ty">double</span> a, <span class="ty">double</span> b) { <span class="kw">return</span> a + b; }
+    },
+    <span class="fn">SUBTRACT</span> {
+        <span class="kw">public double</span> <span class="fn">apply</span>(<span class="ty">double</span> a, <span class="ty">double</span> b) { <span class="kw">return</span> a - b; }
+    },
+    <span class="fn">MULTIPLY</span> {
+        <span class="kw">public double</span> <span class="fn">apply</span>(<span class="ty">double</span> a, <span class="ty">double</span> b) { <span class="kw">return</span> a * b; }
+    },
+    <span class="fn">DIVIDE</span> {
+        <span class="kw">public double</span> <span class="fn">apply</span>(<span class="ty">double</span> a, <span class="ty">double</span> b) {
+            <span class="kw">if</span> (b == <span class="num">0</span>) <span class="kw">throw new</span> <span class="ty">ArithmeticException</span>(<span class="str">"除数不能为零"</span>);
+            <span class="kw">return</span> a / b;
+        }
+    };
+
+    <span class="kw">public abstract double</span> <span class="fn">apply</span>(<span class="ty">double</span> a, <span class="ty">double</span> b);
+}
+
+<span class="cm">// ========== 场景3：统一返回码（后端接口必备）==========</span>
+<span class="kw">public enum</span> <span class="ty">ResultCode</span> {
+    <span class="fn">SUCCESS</span>(<span class="num">200</span>, <span class="str">"操作成功"</span>),
+    <span class="fn">BAD_REQUEST</span>(<span class="num">400</span>, <span class="str">"请求参数错误"</span>),
+    <span class="fn">UNAUTHORIZED</span>(<span class="num">401</span>, <span class="str">"未授权"</span>),
+    <span class="fn">NOT_FOUND</span>(<span class="num">404</span>, <span class="str">"资源不存在"</span>),
+    <span class="fn">SERVER_ERROR</span>(<span class="num">500</span>, <span class="str">"服务器内部错误"</span>);
+
+    <span class="kw">private final int</span> code;
+    <span class="kw">private final</span> <span class="ty">String</span> message;
+    <span class="ty">ResultCode</span>(<span class="ty">int</span> code, <span class="ty">String</span> msg) {
+        <span class="kw">this</span>.code = code; <span class="kw">this</span>.message = msg;
+    }
+    <span class="kw">public int</span> <span class="fn">getCode</span>() { <span class="kw">return</span> code; }
+    <span class="kw">public</span> <span class="ty">String</span> <span class="fn">getMessage</span>() { <span class="kw">return</span> message; }
+}
+
+<span class="cm">// ===== 使用示例 =====</span>
+<span class="kw">public class</span> <span class="ty">EnumDemo</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="ty">String</span>[] args) {
+        <span class="cm">// 场景1：状态判断</span>
+        <span class="ty">OrderStatus</span> status = <span class="ty">OrderStatus</span>.SHIPPING;
+        <span class="ty">System</span>.out.println(status.getDescription());  <span class="cm">// 配送中</span>
+
+        <span class="cm">// 场景2：无需 if/else，直接调用！</span>
+        <span class="ty">double</span> result = <span class="ty">Calculator</span>.ADD.apply(<span class="num">10</span>, <span class="num">5</span>);
+        <span class="ty">System</span>.out.println(<span class="str">"10 + 5 = "</span> + result);  <span class="cm">// 15.0</span>
+
+        <span class="cm">// 场景3：统一API响应码</span>
+        <span class="kw">if</span> (status == <span class="ty">OrderStatus</span>.CANCELLED) {
+            <span class="kw">throw new</span> <span class="ty">RuntimeException</span>(
+                <span class="ty">ResultCode</span>.BAD_REQUEST.getMessage());
+        }
+    }
+}</code></div>
+        <div class="tip">
+          💡 <span><strong>最佳实践：</strong>枚举比常量类更安全（类型检查、防止非法值），比 if/else 更优雅。策略枚举利用抽象方法实现多态，每个枚举实例都是一套独立策略。Spring 框架中大量使用枚举定义 HTTP 状态码和错误码。</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== Card 4: 方法执行计时 ===== -->
+    <div class="card" onclick="toggleCard(this)">
+      <div class="card-number">四</div>
+      <span class="card-icon">⏱</span>
+      <div class="card-title">方法执行计时</div>
+      <div class="card-hint">匿名内部类使用场景</div>
+      <div class="card-expand-indicator">
+        点击查看答案 <span class="arrow">↓</span>
+      </div>
+      <div class="card-answer">
+        <div class="question-box">
+          <strong>问题：</strong>计算一个方法执行了多少秒！匿名内部类的使用场景。
+        </div>
+        <h3>📝 答案 — 匿名内部类 + 计时器</h3>
+        <div class="code-block"><code><span class="kw">import</span> <span class="ty">java.util</span>.<span class="ty">*</span>;
+
+<span class="kw">public class</span> <span class="ty">MethodTimer</span> {
+
+    <span class="cm">/** 函数式接口：表示一个待计时的任务 */</span>
+    <span class="kw">public interface</span> <span class="ty">Task</span> {
+        <span class="kw">void</span> <span class="fn">execute</span>();
+    }
+
+    <span class="cm">/**</span>
+<span class="cm">     * 计时方法：接收一个 Task，执行并返回耗时（毫秒）</span>
+<span class="cm">     * 调用时使用匿名内部类传入具体逻辑</span>
+<span class="cm">     */</span>
+    <span class="kw">public static long</span> <span class="fn">measureTime</span>(<span class="ty">Task</span> task) {
+        <span class="ty">long</span> start = <span class="ty">System</span>.currentTimeMillis();
+        task.execute();  <span class="cm">// 执行传入的任务</span>
+        <span class="ty">long</span> end = <span class="ty">System</span>.currentTimeMillis();
+        <span class="kw">return</span> end - start;
+    }
+
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="ty">String</span>[] args) {
+        <span class="cm">// ★ 匿名内部类：计算一段耗时操作的执行时间</span>
+        <span class="ty">long</span> elapsed = measureTime(<span class="kw">new</span> <span class="ty">Task</span>() {
+            <span class="an">@Override</span>
+            <span class="kw">public void</span> <span class="fn">execute</span>() {
+                <span class="cm">// 模拟耗时：计算 1 ~ 10,000,000 的和</span>
+                <span class="ty">long</span> sum = <span class="num">0</span>;
+                <span class="kw">for</span> (<span class="ty">int</span> i = <span class="num">1</span>; i &lt;= <span class="num">10_000_000</span>; i++) {
+                    sum += i;
+                }
+                <span class="ty">System</span>.out.println(<span class="str">"Sum = "</span> + sum);
+            }
+        });
+
+        <span class="ty">System</span>.out.println(<span class="str">"执行耗时: "</span> + elapsed + <span class="str">" 毫秒"</span>);
+        <span class="ty">System</span>.out.println(<span class="str">"约 "</span> + (elapsed / <span class="num">1000.0</span>) + <span class="str">" 秒"</span>);
+    }
+}
+
+<span class="cm">/* ===== 匿名内部类的其他常见场景 ===== */</span>
+
+<span class="cm">// 1. GUI 事件监听器</span>
+button.addActionListener(<span class="kw">new</span> <span class="ty">ActionListener</span>() {
+    <span class="an">@Override</span>
+    <span class="kw">public void</span> <span class="fn">actionPerformed</span>(<span class="ty">ActionEvent</span> e) {
+        <span class="ty">System</span>.out.println(<span class="str">"按钮被点击了！"</span>);
+    }
+});
+
+<span class="cm">// 2. 快速创建线程</span>
+<span class="kw">new</span> <span class="ty">Thread</span>(<span class="kw">new</span> <span class="ty">Runnable</span>() {
+    <span class="an">@Override</span>
+    <span class="kw">public void</span> <span class="fn">run</span>() {
+        <span class="ty">System</span>.out.println(<span class="str">"匿名内部类创建的线程"</span>);
+    }
+}).start();
+
+<span class="cm">// 3. 自定义比较器</span>
+<span class="ty">Collections</span>.sort(list, <span class="kw">new</span> <span class="ty">Comparator</span>&lt;<span class="ty">String</span>&gt;() {
+    <span class="an">@Override</span>
+    <span class="kw">public int</span> <span class="fn">compare</span>(<span class="ty">String</span> a, <span class="ty">String</span> b) {
+        <span class="kw">return</span> a.length() - b.length();
+    }
+});</code></div>
+        <div class="tip">
+          💡 <span><strong>Java 8+：</strong>Lambda 表达式可替代匿名内部类，更简洁：<code>measureTime(() -> { /* 你的代码 */ })</code>。但理解匿名内部类是理解 Lambda 的前提——Lambda 本质上是函数式接口的匿名实现语法糖。</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== Card 5: Java反射机制 ===== -->
+    <div class="card" onclick="toggleCard(this)">
+      <div class="card-number">五</div>
+      <span class="card-icon">🪞</span>
+      <div class="card-title">Java 反射机制</div>
+      <div class="card-hint">动态获取类信息与调用方法</div>
+      <div class="card-expand-indicator">
+        点击查看答案 <span class="arrow">↓</span>
+      </div>
+      <div class="card-answer">
+        <div class="question-box">
+          <strong>问题：</strong>了解 Java 的反射机制。
+        </div>
+        <h3>📝 答案 — 反射核心操作</h3>
+        <div class="code-block"><code><span class="kw">import</span> <span class="ty">java.lang.reflect</span>.<span class="ty">*</span>;
+
+<span class="cm">/**</span>
+<span class="cm"> * Java 反射机制：在运行时动态获取类的信息、创建对象、</span>
+<span class="cm"> * 调用方法、访问字段——即使编译时不知道具体类型。</span>
+<span class="cm"> */</span>
+<span class="kw">public class</span> <span class="ty">ReflectionDemo</span> {
+
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="ty">String</span>[] args) <span class="kw">throws</span> <span class="ty">Exception</span> {
+        <span class="cm">// 1. 获取 Class 对象的三种方式</span>
+        <span class="ty">Class</span>&lt;?&gt; clazz1 = <span class="ty">Class</span>.forName(<span class="str">"java.util.ArrayList"</span>);
+        <span class="ty">Class</span>&lt;?&gt; clazz2 = <span class="ty">String</span>.class;
+        <span class="ty">Class</span>&lt;?&gt; clazz3 = <span class="kw">new</span> <span class="ty">Integer</span>(<span class="num">1</span>).getClass();
+
+        <span class="cm">// 2. 获取类的完整信息</span>
+        <span class="ty">System</span>.out.println(<span class="str">"=== 类名 ==="</span>);
+        <span class="ty">System</span>.out.println(<span class="str">"全限定名: "</span> + clazz1.getName());
+        <span class="ty">System</span>.out.println(<span class="str">"简单名: "</span> + clazz1.getSimpleName());
+
+        <span class="cm">// 获取所有构造方法</span>
+        <span class="ty">System</span>.out.println(<span class="str">"\n=== 构造方法 ==="</span>);
+        <span class="kw">for</span> (<span class="ty">Constructor</span>&lt;?&gt; c : clazz1.getConstructors()) {
+            <span class="ty">System</span>.out.println(c);
+        }
+
+        <span class="cm">// 获取所有公开方法</span>
+        <span class="ty">System</span>.out.println(<span class="str">"\n=== 公开方法（前5个）==="</span>);
+        <span class="ty">Method</span>[] methods = clazz1.getDeclaredMethods();
+        <span class="kw">for</span> (<span class="ty">int</span> i = <span class="num">0</span>; i &lt; <span class="ty">Math</span>.min(<span class="num">5</span>, methods.length); i++) {
+            <span class="ty">System</span>.out.println(methods[i].getName());
+        }
+
+        <span class="cm">// 3. 动态创建对象</span>
+        <span class="ty">ArrayList</span>&lt;<span class="ty">String</span>&gt; list = (<span class="ty">ArrayList</span>&lt;<span class="ty">String</span>&gt;)
+            clazz1.getDeclaredConstructor().newInstance();
+
+        <span class="cm">// 4. 动态调用方法</span>
+        <span class="ty">Method</span> addMethod = clazz1.getMethod(<span class="str">"add"</span>, <span class="ty">Object</span>.class);
+        addMethod.invoke(list, <span class="str">"Hello Reflection!"</span>);
+
+        <span class="ty">Method</span> sizeMethod = clazz1.getMethod(<span class="str">"size"</span>);
+        <span class="ty">int</span> size = (<span class="ty">int</span>) sizeMethod.invoke(list);
+        <span class="ty">System</span>.out.println(<span class="str">"\nlist.size() = "</span> + size);  <span class="cm">// 1</span>
+
+        <span class="cm">// 5. 访问私有字段（需要 setAccessible 绕过封装）</span>
+        <span class="ty">Class</span>&lt;<span class="ty">Person</span>&gt; personCls = <span class="ty">Person</span>.class;
+        <span class="ty">Field</span> nameField = personCls.getDeclaredField(<span class="str">"name"</span>);
+        nameField.setAccessible(<span class="kw">true</span>);  <span class="cm">// 解除 private 限制</span>
+
+        <span class="ty">Person</span> p = <span class="kw">new</span> <span class="ty">Person</span>();
+        nameField.set(p, <span class="str">"张三"</span>);  <span class="cm">// 直接修改私有字段！</span>
+        <span class="ty">System</span>.out.println(<span class="str">"私有字段值: "</span> + nameField.get(p));
+    }
+}
+
+<span class="kw">class</span> <span class="ty">Person</span> {
+    <span class="kw">private</span> <span class="ty">String</span> name = <span class="str">"默认"</span>;
+}</code></div>
+        <div class="tip">
+          ⚠️ <span><strong>注意：</strong>反射会降低性能（需要安全检查）、破坏封装性，非必要不滥用。但几乎所有 Java 框架（Spring IoC、MyBatis ORM、JUnit 测试）都依赖反射来实现自动装配、动态代理和注解扫描等核心功能。</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== Card 6: 文件复制 ===== -->
+    <div class="card" onclick="toggleCard(this)">
+      <div class="card-number">六</div>
+      <span class="card-icon">📁</span>
+      <div class="card-title">文件复制</div>
+      <div class="card-hint">字符缓冲流 · 万能复制</div>
+      <div class="card-expand-indicator">
+        点击查看答案 <span class="arrow">↓</span>
+      </div>
+      <div class="card-answer">
+        <div class="question-box">
+          <strong>问题：</strong>1. 文本文件复制（字符缓冲流最常用）2. 任意文件复制（缓冲字节流万能复制）。
+        </div>
+        <h3>📝 答案 — 文件复制完整实现</h3>
+        <div class="code-block"><code><span class="kw">import</span> <span class="ty">java.io</span>.<span class="ty">*</span>;
+<span class="kw">import</span> <span class="ty">java.nio.file</span>.<span class="ty">*</span>;
+
+<span class="kw">public class</span> <span class="ty">FileCopy</span> {
+
+    <span class="cm">/**</span>
+<span class="cm">     * 1. 文本文件复制——字符缓冲流（BufferedReader/BufferedWriter）</span>
+<span class="cm">     *    适用：.txt / .java / .xml / .json 等文本文件</span>
+<span class="cm">     *    特点：内置缓冲区（默认 8KB），按行读取，效率最高</span>
+<span class="cm">     */</span>
+    <span class="kw">public static void</span> <span class="fn">copyTextFile</span>(<span class="ty">String</span> src, <span class="ty">String</span> dest) {
+        <span class="kw">try</span> (<span class="ty">BufferedReader</span> reader = <span class="kw">new</span> <span class="ty">BufferedReader</span>(
+                 <span class="kw">new</span> <span class="ty">FileReader</span>(src));
+             <span class="ty">BufferedWriter</span> writer = <span class="kw">new</span> <span class="ty">BufferedWriter</span>(
+                 <span class="kw">new</span> <span class="ty">FileWriter</span>(dest))) {
+
+            <span class="ty">String</span> line;
+            <span class="kw">while</span> ((line = reader.readLine()) != <span class="kw">null</span>) {
+                writer.write(line);
+                writer.newLine();  <span class="cm">// 保留换行符</span>
+            }
+            <span class="ty">System</span>.out.println(<span class="str">"✅ 文本文件复制完成！"</span>);
+
+        } <span class="kw">catch</span> (<span class="ty">IOException</span> e) {
+            <span class="ty">System</span>.err.println(<span class="str">"复制失败: "</span> + e.getMessage());
+        }
+    }
+
+    <span class="cm">/**</span>
+<span class="cm">     * 2. 任意文件复制（万能）——缓冲字节流</span>
+<span class="cm">     *    适用：图片、视频、音频、PDF、Word 等所有文件类型</span>
+<span class="cm">     *    特点：字节级拷贝，不关心文件内容格式</span>
+<span class="cm">     */</span>
+    <span class="kw">public static void</span> <span class="fn">copyAnyFile</span>(<span class="ty">String</span> src, <span class="ty">String</span> dest) {
+        <span class="kw">try</span> (<span class="ty">BufferedInputStream</span> in = <span class="kw">new</span> <span class="ty">BufferedInputStream</span>(
+                 <span class="kw">new</span> <span class="ty">FileInputStream</span>(src));
+             <span class="ty">BufferedOutputStream</span> out = <span class="kw">new</span> <span class="ty">BufferedOutputStream</span>(
+                 <span class="kw">new</span> <span class="ty">FileOutputStream</span>(dest))) {
+
+            <span class="ty">byte</span>[] buffer = <span class="kw">new </span><span class="ty">byte</span>[<span class="num">8192</span>];  <span class="cm">// 8KB 缓冲区</span>
+            <span class="ty">int</span> bytesRead;
+            <span class="kw">while</span> ((bytesRead = in.read(buffer)) != -<span class="num">1</span>) {
+                out.write(buffer, <span class="num">0</span>, bytesRead);
+            }
+            out.flush();
+            <span class="ty">System</span>.out.println(<span class="str">"✅ 任意文件复制完成！"</span>);
+
+        } <span class="kw">catch</span> (<span class="ty">IOException</span> e) {
+            <span class="ty">System</span>.err.println(<span class="str">"复制失败: "</span> + e.getMessage());
+        }
+    }
+
+    <span class="cm">/**</span>
+<span class="cm">     * 3. Files.copy (Java NIO) —— 最简洁的万能复制</span>
+<span class="cm">     *    Java 7+ 推荐方式，一行代码搞定</span>
+<span class="cm">     */</span>
+    <span class="kw">public static void</span> <span class="fn">copyWithNIO</span>(<span class="ty">String</span> src, <span class="ty">String</span> dest) {
+        <span class="kw">try</span> {
+            <span class="ty">Files</span>.copy(<span class="ty">Path</span>.of(src), <span class="ty">Path</span>.of(dest),
+                <span class="ty">StandardCopyOption</span>.REPLACE_EXISTING);
+            <span class="ty">System</span>.out.println(<span class="str">"✅ NIO 复制完成！"</span>);
+        } <span class="kw">catch</span> (<span class="ty">IOException</span> e) {
+            <span class="ty">System</span>.err.println(<span class="str">"复制失败: "</span> + e.getMessage());
+        }
+    }
+
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="ty">String</span>[] args) {
+        copyTextFile(<span class="str">"source.txt"</span>, <span class="str">"dest.txt"</span>);
+        copyAnyFile(<span class="str">"photo.jpg"</span>, <span class="str">"photo_copy.jpg"</span>);
+        copyWithNIO(<span class="str">"data.pdf"</span>, <span class="str">"data_copy.pdf"</span>);
+    }
+}
+
+<span class="cm">/* ===== IO 流选择指南 =====
+ * 文本文件   → FileReader/Writer 或 BufferedReader/Writer
+ * 二进制文件 → FileInputStream/OutputStream
+ *             或 BufferedInputStream/OutputStream
+ * 万能简便   → Files.copy (NIO) ★ 推荐！
+ * 大文件     → 缓冲流 + 大 buffer（如 64KB）+ try-with-resources
+ */</span></code></div>
+        <div class="tip">
+          💡 <span><strong>关键点：</strong>① try-with-resources 自动关闭流，无需手动 finally；② 缓冲流默认 8KB 缓冲区，大幅减少磁盘 I/O 次数；③ 字符流 = 字节流 + 编码表（默认 UTF-8/系统编码），文本用字符流、非文本用字节流。</span>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /cards-container -->
+</section>
+
+<!-- ============================================
+     FOOTER
+     ============================================ -->
+<footer>
+  <p>Made with <span class="heart">♥</span> &nbsp;|&nbsp; Java 作业集 &nbsp;|&nbsp; © 2026</p>
+</footer>
+
+<!-- ============================================
+     JAVASCRIPT — Accordion interaction
+     ============================================ -->
+<script>
+function toggleCard(card) {
+  const wasExpanded = card.classList.contains('expanded');
+
+  // 手风琴模式：先收起所有卡片
+  document.querySelectorAll('.card.expanded').forEach(c => {
+    if (c !== card) c.classList.remove('expanded');
+  });
+
+  // 切换当前卡片
+  if (wasExpanded) {
+    card.classList.remove('expanded');
+  } else {
+    card.classList.add('expanded');
+    // 平滑滚动到展开的卡片
+    setTimeout(() => {
+      card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }, 150);
+  }
+}
+</script>
+
+</body>
+</html>
