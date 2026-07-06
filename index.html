@@ -1109,6 +1109,941 @@ button.addActionListener(<span class="kw">new</span> <span class="ty">ActionList
       </div>
     </div>
 
+    <!-- ===== Card 8: Swing GUI ===== -->
+    <div class="card" onclick="toggleCard(this)">
+      <div class="card-number">八</div>
+      <span class="card-icon">🖥️</span>
+      <div class="card-title">Swing 图形界面编程</div>
+      <div class="card-hint">算术练习 + 扫雷游戏</div>
+      <div class="card-expand-indicator">
+        点击查看答案 <span class="arrow">↓</span>
+      </div>
+      <div class="card-answer">
+        <div class="question-box">
+          <strong>实验4：</strong>Java Swing 图形用户界面 — 掌握事件处理（事件源、监视器、处理事件的接口），设计并完成一个界面美观的算术练习软件。
+        </div>
+
+        <h3>🧮 程序一：算术练习（ArithmeticPractice）</h3>
+        <div class="answer-text">
+          <p><strong>功能特点：</strong></p>
+          <ul>
+            <li><strong>难度可选：</strong>简单 (1-10)、中等 (1-50)、较难 (1-100)</li>
+            <li><strong>运算类型：</strong>加法、减法、乘法、除法、混合</li>
+            <li><strong>数字类型：</strong>整数、小数、分数（可扩展）</li>
+            <li><strong>交互反馈：</strong>即时判断正误，累计得分</li>
+            <li><strong>美观界面：</strong>自定义绘制背景、圆角组件、精心配色</li>
+          </ul>
+        </div>
+
+        <div class="code-block"><code>import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionListener;
+import java.util.Random;
+public class ArithmeticPractice extends JFrame
+{
+    private JLabel questionLabel;
+    private JTextField answerField;
+    private JButton submitButton, nextButton;
+    private JLabel feedbackLabel, scoreLabel;
+    private JComboBox&lt;String&gt; difficultyBox, operationBox, numberTypeBox;
+    private double currentAnswerDouble;
+    private int currentAnswerInt;
+    private int currentNum1, currentNum2;
+    // 分数结果    private boolean isFraction, isDouble;
+    private int score = 0, total = 0;
+    private Random rand = new Random();
+    public ArithmeticPractice()
+    {
+        setTitle(&quot;算术练习&quot;);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setSize(480, 440);
+        setLocationRelativeTo(null);
+        setResizable(false);
+        initUI();
+        generateNewQuestion();
+    }
+    private void initUI()
+    {
+        // 背景面板        JPanel main = new JPanel() {
+            {
+                @Override            protected void paintComponent(Graphics g)
+                {
+                    super.paintComponent(g);
+                    Graphics2D g2 = (Graphics2D) g;
+                    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                    g2.setColor(new Color(252, 248, 240));
+                    g2.fillRect(0, 0, getWidth(), getHeight());
+                    g2.setColor(new Color(220, 210, 195));
+                    for (int i = 0;
+                    i &lt; 30;
+                    i++)                    g2.fillOval(rand.nextInt(getWidth()), rand.nextInt(getHeight()), 4, 4);
+                }
+            }
+            ;
+            main.setLayout(new BoxLayout(main, BoxLayout.Y_AXIS));
+            main.setBorder(BorderFactory.createEmptyBorder(25, 30, 25, 30));
+            main.setOpaque(true);
+            // 控制面板（两行）        JPanel ctrl = new JPanel();
+            ctrl.setLayout(new BoxLayout(ctrl, BoxLayout.Y_AXIS));
+            ctrl.setOpaque(false);
+            ctrl.setMaximumSize(new Dimension(480, 80));
+            JPanel row1 = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 5));
+            row1.setOpaque(false);
+            row1.add(makeLabel(&quot;难度：&quot;));
+            difficultyBox = makeCombo(new String[]
+            {
+                &quot;简单 (1-10)&quot;, &quot;中等 (1-50)&quot;, &quot;较难 (1-100)&quot;
+            }
+            , 120);
+            row1.add(difficultyBox);
+            row1.add(makeLabel(&quot;运算：&quot;));
+            operationBox = makeCombo(new String[]
+            {
+                &quot;加法&quot;, &quot;减法&quot;, &quot;乘法&quot;, &quot;除法&quot;, &quot;混合&quot;
+            }
+            , 100);
+            row1.add(operationBox);
+            JPanel row2 = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 5));
+            row2.setOpaque(false);
+            row2.add(makeLabel(&quot;数字类型：&quot;));
+            numberTypeBox = makeCombo(new String[]
+            {
+                &quot;整数&quot;, &quot;小数&quot;, &quot;分数&quot;
+            }
+            , 120);
+            row2.add(numberTypeBox);
+            ctrl.add(row1);
+            ctrl.add(Box.createVerticalStrut(5));
+            ctrl.add(row2);
+            // 题目显示        JPanel qPanel = new JPanel(new GridBagLayout());
+            qPanel.setOpaque(false);
+            qPanel.setMaximumSize(new Dimension(480, 110));
+            questionLabel = new JLabel(&quot;5 + 3 = ?&quot;);
+            questionLabel.setFont(new Font(&quot;微软雅黑&quot;, Font.BOLD, 36));
+            questionLabel.setForeground(new Color(30, 30, 30));
+            questionLabel.setPreferredSize(new Dimension(320, 75));
+            questionLabel.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+            questionLabel.setBackground(new Color(255, 250, 245));
+            questionLabel.setOpaque(true);
+            qPanel.add(questionLabel);
+            // 输入区域        JPanel inPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 10));
+            inPanel.setOpaque(false);
+            inPanel.setMaximumSize(new Dimension(480, 70));
+            inPanel.add(makeLabel(&quot;答案：&quot;));
+            answerField = new JTextField(12);
+            answerField.setFont(new Font(&quot;微软雅黑&quot;, Font.PLAIN, 24));
+            answerField.setHorizontalAlignment(JTextField.CENTER);
+            answerField.setPreferredSize(new Dimension(170, 42));
+            answerField.setBorder(BorderFactory.createCompoundBorder(                BorderFactory.createLineBorder(new Color(200, 180, 160), 2, true),                BorderFactory.createEmptyBorder(5, 10, 5, 10)        ));
+            answerField.setBackground(new Color(255, 252, 248));
+            inPanel.add(answerField);
+            // 按钮        JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 30, 5));
+            btnPanel.setOpaque(false);
+            btnPanel.setMaximumSize(new Dimension(480, 60));
+            submitButton = makeButton(&quot;确定 ✓&quot;, new Color(255, 107, 107));
+            nextButton = makeButton(&quot;下一题 →&quot;, new Color(78, 205, 196));
+            btnPanel.add(submitButton);
+            btnPanel.add(nextButton);
+            // 底部信息        JPanel bottom = new JPanel();
+            bottom.setLayout(new BoxLayout(bottom, BoxLayout.Y_AXIS));
+            bottom.setOpaque(false);
+            bottom.setMaximumSize(new Dimension(480, 80));
+            bottom.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
+            feedbackLabel = new JLabel(&quot;✏️ 输入答案后点击确定&quot;, SwingConstants.CENTER);
+            feedbackLabel.setFont(new Font(&quot;微软雅黑&quot;, Font.PLAIN, 16));
+            feedbackLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+            feedbackLabel.setForeground(new Color(80, 70, 60));
+            feedbackLabel.setBorder(null);
+            feedbackLabel.setOpaque(false);
+            scoreLabel = new JLabel(&quot;⭐ 得分：0 / 0&quot;, SwingConstants.CENTER);
+            scoreLabel.setFont(new Font(&quot;微软雅黑&quot;, Font.BOLD, 17));
+            scoreLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+            scoreLabel.setForeground(new Color(200, 120, 20));
+            scoreLabel.setBorder(null);
+            scoreLabel.setOpaque(false);
+            bottom.add(feedbackLabel);
+            bottom.add(Box.createVerticalStrut(8));
+            bottom.add(scoreLabel);
+            // 组装        main.add(ctrl);
+            main.add(Box.createVerticalStrut(8));
+            main.add(qPanel);
+            main.add(Box.createVerticalStrut(5));
+            main.add(inPanel);
+            main.add(Box.createVerticalStrut(3));
+            main.add(btnPanel);
+            main.add(Box.createVerticalStrut(10));
+            main.add(bottom);
+            add(main);
+            // 事件        ActionListener submitAction = e -&gt; {
+                {
+                    checkAnswer();
+                    generateNewQuestion();
+                    answerField.setText(&quot;&quot;);
+                    answerField.requestFocus();
+                }
+                ;
+                submitButton.addActionListener(submitAction);
+                answerField.addActionListener(submitAction);
+                nextButton.addActionListener(e -&gt;
+                {
+                    generateNewQuestion();
+                    answerField.setText(&quot;&quot;);
+                    feedbackLabel.setText(&quot;✏️ 新题目已生成&quot;);
+                    feedbackLabel.setForeground(new Color(80,70,60));
+                    answerField.requestFocus();
+                }
+                );
+                ActionListener changeAction = e -&gt;
+                {
+                    generateNewQuestion();
+                    answerField.setText(&quot;&quot;);
+                    feedbackLabel.setText(&quot;✏️ 选项已更改&quot;);
+                    feedbackLabel.setForeground(new Color(80,70,60));
+                }
+                ;
+                difficultyBox.addActionListener(changeAction);
+                operationBox.addActionListener(changeAction);
+                numberTypeBox.addActionListener(changeAction);
+            }
+            // 辅助方法    private JLabel makeLabel(String text) {
+                {
+                    JLabel l = new JLabel(text);
+                    l.setFont(new Font(&quot;微软雅黑&quot;, Font.BOLD, 15));
+                    l.setForeground(new Color(60, 50, 40));
+                    l.setBorder(null);
+                    l.setOpaque(false);
+                    return l;
+                }
+                private JComboBox&lt;String&gt; makeCombo(String[] items, int width)
+                {
+                    JComboBox&lt;String&gt; cb = new JComboBox&lt;&gt;(items);
+                    cb.setFont(new Font(&quot;微软雅黑&quot;, Font.PLAIN, 14));
+                    cb.setBackground(new Color(255, 245, 235));
+                    cb.setBorder(BorderFactory.createLineBorder(new Color(200, 180, 160), 2, true));
+                    cb.setPreferredSize(new Dimension(width, 30));
+                    return cb;
+                }
+                private JButton makeButton(String text, Color bg)
+                {
+                    JButton b = new JButton(text);
+                    b.setFont(new Font(&quot;微软雅黑&quot;, Font.BOLD, 14));
+                    b.setForeground(Color.WHITE);
+                    b.setBackground(bg);
+                    b.setBorder(BorderFactory.createEmptyBorder(6, 16, 6, 16));
+                    b.setFocusPainted(false);
+                    b.setBorderPainted(false);
+                    b.setContentAreaFilled(true);
+                    b.setOpaque(true);
+                    b.setCursor(new Cursor(Cursor.HAND_CURSOR));
+                    b.setPreferredSize(new Dimension(95, 35));
+                    return b;
+                }
+                // ----- 生成题目 -----    private void generateNewQuestion() {
+                    {
+                        int max = getMax();
+                        String op = (String) operationBox.getSelectedItem();
+                        String type = (String) numberTypeBox.getSelectedItem();
+                        if (&quot;混合&quot;.equals(op))
+                        {
+                            String[] ops =
+                            {
+                                &quot;加法&quot;, &quot;减法&quot;, &quot;乘法&quot;, &quot;除法&quot;
+                            }
+                            ;
+                            op = ops[rand.nextInt(ops.length)];
+                        }
+                        String question = &quot;&quot;;
+                        boolean valid = false;
+                        for (int i = 0;
+                        i &lt; 100 &amp;&amp; !valid;
+                        i++)
+                        {
+                            valid = true;
+                            if (&quot;整数&quot;.equals(type))
+                            {
+                                int a = rand.nextInt(max) + 1, b = rand.nextInt(max) + 1;
+                                int res = 0;
+                                switch (op)
+                                {
+                                    case &quot;加法&quot;: res = a + b;
+                                    question = a + &quot; + &quot; + b + &quot; = ?&quot;;
+                                    break;
+                                    case &quot;减法&quot;: if (a &lt; b)
+                                    {
+                                        int t=a;
+                                        a=b;
+                                        b=t;
+                                    }
+                                    res = a - b;
+                                    question = a + &quot; - &quot; + b + &quot; = ?&quot;;
+                                    break;
+                                    case &quot;乘法&quot;: if (a * b &gt; 200)
+                                    {
+                                        valid=false;
+                                        continue;
+                                    }
+                                    res = a * b;
+                                    question = a + &quot; × &quot; + b + &quot; = ?&quot;;
+                                    break;
+                                    case &quot;除法&quot;: if (b==0 || a%b!=0)
+                                    {
+                                        valid=false;
+                                        continue;
+                                    }
+                                    res = a / b;
+                                    question = a + &quot; ÷ &quot; + b + &quot; = ?&quot;;
+                                    break;
+                                }
+                                if (valid)
+                                {
+                                    isDouble=false;
+                                    isFraction=false;
+                                    currentAnswerInt = res;
+                                }
+                            }
+                            else if (&quot;小数&quot;.equals(type))
+                            {
+                                double a = round1(rand.nextDouble() * max + 0.1);
+                                double b = round1(rand.nextDouble() * max + 0.1);
+                                if (a == (int)a) a += 0.5;
+                                if (b == (int)b) b += 0.3;
+                                double res = 0;
+                                switch (op)
+                                {
+                                    case &quot;加法&quot;: res = a + b;
+                                    question = String.format(&quot;%.1f + %.1f = ?&quot;, a, b);
+                                    break;
+                                    case &quot;减法&quot;: if (a &lt; b)
+                                    {
+                                        double t=a;
+                                        a=b;
+                                        b=t;
+                                    }
+                                    res = a - b;
+                                    question = String.format(&quot;%.1f - %.1f = ?&quot;, a, b);
+                                    break;
+                                    case &quot;乘法&quot;: if (a * b &gt; 500)
+                                    {
+                                        valid=false;
+                                        continue;
+                                    }
+                                    res = round2(a * b);
+                                    question = String.format(&quot;%.1f × %.1f = ?&quot;, a, b);
+                                    break;
+                                    case &quot;除法&quot;: if (b==0)
+                                    {
+                                        valid=false;
+                                        continue;
+                                    }
+                                    res = round2(a / b);
+                                    question = String.format(&quot;%.1f ÷ %.1f = ?&quot;, a, b);
+                                    break;
+                                }
+                                if (valid)
+                                {
+                                    isDouble=true;
+                                    isFraction=false;
+                                    currentAnswerDouble = res;
+                                }
+                            }
+                            else
+                            {
+                                // 分数                int d1 = rand.nextInt(9)+2, n1 = rand.nextInt(d1-1)+1;
+                                int d2 = rand.nextInt(9)+2, n2 = rand.nextInt(d2-1)+1;
+                                int rn=0, rd=1;
+                                switch (op)
+                                {
+                                    case &quot;加法&quot;: rn = n1*d2 + n2*d1;
+                                    rd = d1*d2;
+                                    question = n1+&quot;/&quot;+d1+&quot; + &quot;+n2+&quot;/&quot;+d2+&quot; = ?&quot;;
+                                    break;
+                                    case &quot;减法&quot;:                        if (n1*d2 &lt; n2*d1)
+                                    {
+                                        int t=n1;
+                                        n1=n2;
+                                        n2=t;
+                                        t=d1;
+                                        d1=d2;
+                                        d2=t;
+                                    }
+                                    rn = n1*d2 - n2*d1;
+                                    rd = d1*d2;
+                                    question = n1+&quot;/&quot;+d1+&quot; - &quot;+n2+&quot;/&quot;+d2+&quot; = ?&quot;;
+                                    break;
+                                    case &quot;乘法&quot;: rn = n1*n2;
+                                    rd = d1*d2;
+                                    question = n1+&quot;/&quot;+d1+&quot; × &quot;+n2+&quot;/&quot;+d2+&quot; = ?&quot;;
+                                    break;
+                                    case &quot;除法&quot;: if (n2==0)
+                                    {
+                                        valid=false;
+                                        continue;
+                                    }
+                                    rn = n1*d2;
+                                    rd = d1*n2;
+                                    question = n1+&quot;/&quot;+d1+&quot; ÷ &quot;+n2+&quot;/&quot;+d2+&quot; = ?&quot;;
+                                    break;
+                                }
+                                if (valid)
+                                {
+                                    int g = gcd(Math.abs(rn), Math.abs(rd));
+                                    rn /= g;
+                                    rd /= g;
+                                    currentNum1 = rn;
+                                    currentNum2 = rd;
+                                    isFraction = true;
+                                    isDouble = false;
+                                }
+                            }
+                        }
+                        if (!valid)
+                        {
+                            // 降级为整数加法            int a = rand.nextInt(max)+1, b = rand.nextInt(max)+1;
+                            question = a + &quot; + &quot; + b + &quot; = ?&quot;;
+                            currentAnswerInt = a + b;
+                            isDouble = false;
+                            isFraction = false;
+                        }
+                        questionLabel.setText(question);
+                        answerField.setText(&quot;&quot;);
+                        answerField.requestFocus();
+                    }
+                    private double round1(double v)
+                    {
+                        return Math.round(v * 10) / 10.0;
+                    }
+                    private double round2(double v)
+                    {
+                        return Math.round(v * 100) / 100.0;
+                    }
+                    private int gcd(int a, int b)
+                    {
+                        return b == 0 ? Math.abs(a) : gcd(b, a % b);
+                    }
+                    // ----- 检查答案 -----    private void checkAnswer() {
+                        {
+                            String input = answerField.getText().trim();
+                            if (input.isEmpty())
+                            {
+                                feedbackLabel.setText(&quot;⚠️ 请输入答案！&quot;);
+                                feedbackLabel.setForeground(Color.RED);
+                                return;
+                            }
+                            boolean correct = false;
+                            try
+                            {
+                                if (isDouble)
+                                {
+                                    correct = Math.abs(Double.parseDouble(input) - currentAnswerDouble) &lt; 0.01;
+                                }
+                                else if (isFraction)
+                                {
+                                    if (input.contains(&quot;/&quot;))
+                                    {
+                                        String[] p = input.split(&quot;/&quot;);
+                                        if (p.length == 2)
+                                        {
+                                            int n = Integer.parseInt(p[0].trim());
+                                            int d = Integer.parseInt(p[1].trim());
+                                            if (d != 0)
+                                            {
+                                                int g1 = gcd(Math.abs(n), Math.abs(d));
+                                                n /= g1;
+                                                d /= g1;
+                                                int g2 = gcd(Math.abs(currentNum1), Math.abs(currentNum2));
+                                                int rn = currentNum1 / g2, rd = currentNum2 / g2;
+                                                correct = (n == rn &amp;&amp; d == rd);
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+                                        correct = Math.abs(Double.parseDouble(input) - (double)currentNum1 / currentNum2) &lt; 0.01;
+                                    }
+                                }
+                                else
+                                {
+                                    correct = Integer.parseInt(input) == currentAnswerInt;
+                                }
+                                total++;
+                                if (correct)
+                                {
+                                    score++;
+                                    feedbackLabel.setText(&quot;🎉 回答正确！太棒了！&quot;);
+                                    feedbackLabel.setForeground(new Color(0,150,0));
+                                }
+                                else
+                                {
+                                    String ans = isDouble ? String.format(&quot;%.2f&quot;, currentAnswerDouble) :                        isFraction ? (currentNum1/gcd(Math.abs(currentNum1),Math.abs(currentNum2)) + &quot;/&quot; + currentNum2/gcd(Math.abs(currentNum1),Math.abs(currentNum2))) :                                String.valueOf(currentAnswerInt);
+                                    feedbackLabel.setText(&quot;❌ 回答错误，正确答案是：&quot; + ans);
+                                    feedbackLabel.setForeground(Color.RED);
+                                }
+                                scoreLabel.setText(&quot;⭐ 得分：&quot; + score + &quot; / &quot; + total);
+                            }
+                            catch (NumberFormatException e)
+                            {
+                                feedbackLabel.setText(&quot;⚠️ 请正确输入数字或分数（如 3/4）&quot;);
+                                feedbackLabel.setForeground(Color.RED);
+                            }
+                        }
+                        private int getMax()
+                        {
+                            String s = (String) difficultyBox.getSelectedItem();
+                            if (s.contains(&quot;简单&quot;)) return 10;
+                            if (s.contains(&quot;中等&quot;)) return 50;
+                            if (s.contains(&quot;较难&quot;)) return 100;
+                            return 10;
+                        }
+                        public static void main(String[] args)
+                        {
+                            try
+                            {
+                                UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+                            }
+                            catch (Exception e)
+                            {
+                            }
+                            SwingUtilities.invokeLater(() -&gt; new ArithmeticPractice().setVisible(true));
+                        }
+                    }</code></div>
+
+        <h3 style="margin-top:28px;">💣 程序二：扫雷游戏（MineSweeper）</h3>
+        <div class="question-box">
+          <strong>实验2（选做）：</strong>终端游戏 — 扫雷。良好的界面实现、可调节难度、计时与计步功能、保存/读取游戏进度。
+        </div>
+        <div class="answer-text">
+          <p><strong>功能特点：</strong></p>
+          <ul>
+            <li><strong>三级难度：</strong>简单 9×9 (10雷)、中等 16×16 (40雷)、困难 30×16 (99雷)</li>
+            <li><strong>标准玩法：</strong>左键翻开、右键插旗、自动展开空白区（BFS）</li>
+            <li><strong>计时器：</strong>首次点击启动，精确到秒</li>
+            <li><strong>步数统计：</strong>记录每次翻格操作</li>
+            <li><strong>存档系统：</strong>对象序列化保存/读取游戏进度</li>
+            <li><strong>状态判断：</strong>踩雷失败 / 全部揭开胜利</li>
+          </ul>
+        </div>
+
+        <div class="code-block"><code>import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.io.*;
+import java.util.Random;
+/** * 扫雷游戏（精简版） */
+public class MineSweeper extends JFrame
+{
+    private enum GameState
+    {
+        PLAYING, WIN, LOSE
+    }
+    private GameState gameState = GameState.PLAYING;
+    private int rows, cols, mines;
+    private int[][] board;
+    private boolean[][] revealed, flagged;
+    private JButton[][] cells;
+    private JLabel statusLbl, mineLbl, timeLbl, stepLbl;
+    private JComboBox&lt;String&gt; diffBox;
+    private Timer timer;
+    private int seconds = 0, steps = 0;
+    private boolean firstClick = true, ended = false;
+    private Random rand = new Random();
+    private static final String SAVE_FILE = &quot;minesweeper.sav&quot;;
+    public MineSweeper()
+    {
+        setTitle(&quot;扫雷&quot;);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLayout(new BorderLayout());
+        // 顶部栏        JPanel top = new JPanel(new FlowLayout(FlowLayout.CENTER, 8, 5));
+        diffBox = new JComboBox&lt;&gt;(new String[]
+        {
+            &quot;简单 9x9&quot;, &quot;中等 16x16&quot;, &quot;困难 30x16&quot;
+        }
+        );
+        diffBox.addActionListener(e -&gt; newGame());
+        JButton newBtn = new JButton(&quot;新游戏&quot;), saveBtn = new JButton(&quot;保存&quot;), loadBtn = new JButton(&quot;读取&quot;);
+        newBtn.addActionListener(e -&gt; newGame());
+        saveBtn.addActionListener(e -&gt; saveGame());
+        loadBtn.addActionListener(e -&gt; loadGame());
+        statusLbl = new JLabel(&quot;游戏中&quot;);
+        mineLbl = new JLabel(&quot;💣0&quot;);
+        timeLbl = new JLabel(&quot;⏱0s&quot;);
+        stepLbl = new JLabel(&quot;👣0&quot;);
+        for (Component c : new Component[]
+        {
+            diffBox, newBtn, saveBtn, loadBtn, statusLbl, mineLbl, timeLbl, stepLbl
+        }
+        ) top.add(c);
+        add(top, BorderLayout.NORTH);
+        // 游戏面板        JPanel gamePanel = new JPanel(new GridLayout(1, 1));
+        add(gamePanel, BorderLayout.CENTER);
+        setDifficulty(0);
+        newGame();
+        setSize(650, 550);
+        setLocationRelativeTo(null);
+        setVisible(true);
+    }
+    private void setDifficulty(int idx)
+    {
+        int[][] d =
+        {
+            {
+                9,9,10
+            }
+            ,
+            {
+                16,16,40
+            }
+            ,
+            {
+                16,30,99
+            }
+        }
+        ;
+        rows = d[idx][0];
+        cols = d[idx][1];
+        mines = d[idx][2];
+    }
+    private void newGame()
+    {
+        setDifficulty(diffBox.getSelectedIndex());
+        board = new int[rows][cols];
+        revealed = new boolean[rows][cols];
+        flagged = new boolean[rows][cols];
+        cells = new JButton[rows][cols];
+        firstClick = true;
+        ended = false;
+        gameState = GameState.PLAYING;
+        seconds = steps = 0;
+        if (timer != null) timer.stop();
+        JPanel gp = (JPanel) getContentPane().getComponent(1);
+        gp.removeAll();
+        gp.setLayout(new GridLayout(rows, cols));
+        for (int r = 0;
+        r &lt; rows;
+        r++)
+        {
+            for (int c = 0;
+            c &lt; cols;
+            c++)
+            {
+                JButton btn = new JButton();
+                btn.setFont(new Font(&quot;Arial&quot;, Font.BOLD, 14));
+                btn.setMargin(new Insets(0, 0, 0, 0));
+                btn.setBackground(Color.LIGHT_GRAY);
+                btn.addMouseListener(new ClickListener(r, c));
+                cells[r][c] = btn;
+                gp.add(btn);
+            }
+        }
+        gp.revalidate();
+        gp.repaint();
+        updateLabels();
+        pack();
+    }
+    private void placeMines(int exR, int exC)
+    {
+        int placed = 0;
+        while (placed &lt; mines)
+        {
+            int r = rand.nextInt(rows), c = rand.nextInt(cols);
+            if ((r == exR &amp;&amp; c == exC) || board[r][c] == -1) continue;
+            board[r][c] = -1;
+            placed++;
+        }
+        for (int r = 0;
+        r &lt; rows;
+        r++)            for (int c = 0;
+        c &lt; cols;
+        c++)
+        {
+            if (board[r][c] == -1) continue;
+            int cnt = 0;
+            for (int dr = -1;
+            dr &lt;= 1;
+            dr++)                    for (int dc = -1;
+            dc &lt;= 1;
+            dc++)
+            {
+                if (dr == 0 &amp;&amp; dc == 0) continue;
+                int nr = r + dr, nc = c + dc;
+                if (nr &gt;= 0 &amp;&amp; nr &lt; rows &amp;&amp; nc &gt;= 0 &amp;&amp; nc &lt; cols &amp;&amp; board[nr][nc] == -1) cnt++;
+            }
+            board[r][c] = cnt;
+        }
+    }
+    private void reveal(int r, int c)
+    {
+        if (ended || r &lt; 0 || r &gt;= rows || c &lt; 0 || c &gt;= cols || revealed[r][c] || flagged[r][c]) return;
+        if (firstClick)
+        {
+            placeMines(r, c);
+            firstClick = false;
+            startTimer();
+        }
+        if (board[r][c] == -1)
+        {
+            gameOver(false);
+            return;
+        }
+        revealed[r][c] = true;
+        steps++;
+        if (board[r][c] == 0)
+        {
+            java.util.Queue&lt;int[]&gt; q = new java.util.LinkedList&lt;&gt;();
+            q.add(new int[]
+            {
+                r, c
+            }
+            );
+            while (!q.isEmpty())
+            {
+                int[] p = q.poll();
+                for (int dr = -1;
+                dr &lt;= 1;
+                dr++)                    for (int dc = -1;
+                dc &lt;= 1;
+                dc++)
+                {
+                    if (dr == 0 &amp;&amp; dc == 0) continue;
+                    int nr = p[0] + dr, nc = p[1] + dc;
+                    if (nr &gt;= 0 &amp;&amp; nr &lt; rows &amp;&amp; nc &gt;= 0 &amp;&amp; nc &lt; cols &amp;&amp; !revealed[nr][nc] &amp;&amp; !flagged[nr][nc] &amp;&amp; board[nr][nc] != -1)
+                    {
+                        revealed[nr][nc] = true;
+                        steps++;
+                        if (board[nr][nc] == 0) q.add(new int[]
+                        {
+                            nr, nc
+                        }
+                        );
+                    }
+                }
+            }
+        }
+        refreshAll();
+        checkWin();
+    }
+    private void toggleFlag(int r, int c)
+    {
+        if (ended || r &lt; 0 || r &gt;= rows || c &lt; 0 || c &gt;= cols || revealed[r][c]) return;
+        flagged[r][c] = !flagged[r][c];
+        refreshAll();
+        int flags = 0;
+        for (boolean[] row : flagged) for (boolean f : row) if (f) flags++;
+        mineLbl.setText(&quot;💣&quot; + (mines - flags));
+    }
+    private void refreshAll()
+    {
+        for (int r = 0;
+        r &lt; rows;
+        r++)            for (int c = 0;
+        c &lt; cols;
+        c++)
+        {
+            JButton btn = cells[r][c];
+            if (revealed[r][c])
+            {
+                btn.setEnabled(false);
+                btn.setBackground(new Color(220, 220, 220));
+                int v = board[r][c];
+                if (v == -1)
+                {
+                    btn.setText(&quot;💣&quot;);
+                    btn.setForeground(Color.BLACK);
+                }
+                else if (v &gt; 0)
+                {
+                    btn.setText(String.valueOf(v));
+                    Color[] colors =
+                    {
+                        Color.BLUE, new Color(0,128,0), Color.RED, new Color(0,0,128),                                new Color(128,0,0), new Color(0,128,128), Color.BLACK, Color.GRAY
+                    }
+                    ;
+                    btn.setForeground(colors[v-1]);
+                }
+                else btn.setText(&quot;&quot;);
+            }
+            else
+            {
+                btn.setEnabled(true);
+                btn.setBackground(Color.LIGHT_GRAY);
+                btn.setText(flagged[r][c] ? &quot;🚩&quot; : &quot;&quot;);
+            }
+        }
+        updateLabels();
+    }
+    private void checkWin()
+    {
+        int unrevealed = 0;
+        for (int r = 0;
+        r &lt; rows;
+        r++) for (int c = 0;
+        c &lt; cols;
+        c++) if (!revealed[r][c]) unrevealed++;
+        if (unrevealed == mines) gameOver(true);
+    }
+    private void gameOver(boolean win)
+    {
+        if (timer != null) timer.stop();
+        ended = true;
+        gameState = win ? GameState.WIN : GameState.LOSE;
+        statusLbl.setText(win ? &quot;🎉赢了!&quot; : &quot;💥输了&quot;);
+        for (int r = 0;
+        r &lt; rows;
+        r++)            for (int c = 0;
+        c &lt; cols;
+        c++)
+        {
+            JButton btn = cells[r][c];
+            if (board[r][c] == -1)
+            {
+                btn.setText(&quot;💣&quot;);
+                btn.setBackground(new Color(255, 100, 100));
+                btn.setEnabled(false);
+            }
+            else if (!revealed[r][c]) btn.setEnabled(false);
+        }
+    }
+    private void startTimer()
+    {
+        if (timer != null) timer.stop();
+        timer = new Timer(1000, e -&gt;
+        {
+            seconds++;
+            timeLbl.setText(&quot;⏱&quot; + seconds + &quot;s&quot;);
+        }
+        );
+        timer.start();
+    }
+    private void updateLabels()
+    {
+        int flags = 0;
+        for (boolean[] row : flagged) for (boolean f : row) if (f) flags++;
+        mineLbl.setText(&quot;💣&quot; + (mines - flags));
+        timeLbl.setText(&quot;⏱&quot; + seconds + &quot;s&quot;);
+        stepLbl.setText(&quot;👣&quot; + steps);
+        statusLbl.setText(ended ? (gameState == GameState.WIN ? &quot;🎉赢了!&quot; : &quot;💥输了&quot;) : &quot;游戏中&quot;);
+    }
+    // ---------- 保存/读取 ----------    private void saveGame() {
+        {
+            try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(SAVE_FILE)))
+            {
+                oos.writeObject(new GameData(rows, cols, mines, board, revealed, flagged, seconds, steps, ended, firstClick));
+                JOptionPane.showMessageDialog(this, &quot;已保存&quot;);
+            }
+            catch (IOException e)
+            {
+                JOptionPane.showMessageDialog(this, &quot;保存失败&quot;);
+            }
+        }
+        private void loadGame()
+        {
+            try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(SAVE_FILE)))
+            {
+                GameData d = (GameData) ois.readObject();
+                rows = d.rows;
+                cols = d.cols;
+                mines = d.mines;
+                board = d.board;
+                revealed = d.revealed;
+                flagged = d.flagged;
+                seconds = d.seconds;
+                steps = d.steps;
+                ended = d.ended;
+                firstClick = d.firstClick;
+                gameState = ended ? (GameState.LOSE) : GameState.PLAYING;
+                diffBox.setSelectedIndex(getDiffIdx());
+                JPanel gp = (JPanel) getContentPane().getComponent(1);
+                gp.removeAll();
+                gp.setLayout(new GridLayout(rows, cols));
+                cells = new JButton[rows][cols];
+                for (int r = 0;
+                r &lt; rows;
+                r++) for (int c = 0;
+                c &lt; cols;
+                c++)
+                {
+                    JButton btn = new JButton();
+                    btn.setFont(new Font(&quot;Arial&quot;, Font.BOLD, 14));
+                    btn.setMargin(new Insets(0, 0, 0, 0));
+                    btn.addMouseListener(new ClickListener(r, c));
+                    cells[r][c] = btn;
+                    gp.add(btn);
+                }
+                refreshAll();
+                if (!firstClick &amp;&amp; !ended)
+                {
+                    startTimer();
+                }
+                gp.revalidate();
+                gp.repaint();
+                pack();
+                JOptionPane.showMessageDialog(this, &quot;已读取&quot;);
+            }
+            catch (Exception e)
+            {
+                JOptionPane.showMessageDialog(this, &quot;读取失败&quot;);
+            }
+        }
+        private int getDiffIdx()
+        {
+            if (rows == 9 &amp;&amp; cols == 9 &amp;&amp; mines == 10) return 0;
+            if (rows == 16 &amp;&amp; cols == 16 &amp;&amp; mines == 40) return 1;
+            return 2;
+        }
+        private class ClickListener extends MouseAdapter
+        {
+            int r, c;
+            ClickListener(int r, int c)
+            {
+                this.r = r;
+                this.c = c;
+            }
+            public void mouseClicked(MouseEvent e)
+            {
+                if (ended) return;
+                if (SwingUtilities.isLeftMouseButton(e)) reveal(r, c);
+                else if (SwingUtilities.isRightMouseButton(e)) toggleFlag(r, c);
+            }
+        }
+        private static class GameData implements Serializable
+        {
+            private static final long serialVersionUID = 1L;
+            int rows, cols, mines, seconds, steps;
+            int[][] board;
+            boolean[][] revealed, flagged;
+            boolean ended, firstClick;
+            GameData(int rows, int cols, int mines, int[][] board, boolean[][] revealed, boolean[][] flagged,                 int seconds, int steps, boolean ended, boolean firstClick)
+            {
+                this.rows = rows;
+                this.cols = cols;
+                this.mines = mines;
+                this.board = board;
+                this.revealed = revealed;
+                this.flagged = flagged;
+                this.seconds = seconds;
+                this.steps = steps;
+                this.ended = ended;
+                this.firstClick = firstClick;
+            }
+        }
+        public static void main(String[] args)
+        {
+            try
+            {
+                UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+            }
+            catch (Exception e)
+            {
+            }
+            SwingUtilities.invokeLater(MineSweeper::new);
+        }
+    }</code></div>
+
+        <div class="tip">
+          💡 <span><strong>关键知识点：</strong>① Swing 事件模型三要素——<strong>事件源</strong>（JButton/JComboBox）、<strong>监视器</strong>（addActionListener）、<strong>处理接口</strong>（ActionListener）；② 自定义 JPanel 重写 <code>paintComponent()</code> 实现个性化界面；③ <strong>序列化</strong>（Serializable）实现游戏存档；④ BFS 算法自动展开空白区域是扫雷的经典实现方式；⑤ SwingUtilities.invokeLater() 确保 GUI 在事件调度线程中安全启动。</span>
+        </div>
+      </div>
+    </div>
+
   </div><!-- /cards-container -->
 </section>
 
